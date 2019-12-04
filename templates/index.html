@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block title %}
+    Wikipedia Search
+{% endblock %}
+{% block main %}
+    <form action="/" method="post">
+        <div class="form-group">
+            <input autocomplete="off" autofocus class="form-control" name="Wikipedia Search" placeholder="Wikipedia Search" type="text">
+        </div>
+        <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+
+    <form action="/extractsections" method="post">
+
+        <div class="form-group">
+            {% for art in list_art %}
+            <input type = "checkbox" name = "art title" value = "{{art}}"> {{art}}
+            {% endfor %}
+        </div>
+        <!-- go to next page if this link is clicked -->
+        <button class="btn btn-primary" type="submit">Extract Sections From Articles</button>
+
+
+    </form>
+
+
+
+
+
+
+
+
+{% endblock %}
