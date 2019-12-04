@@ -3,5 +3,19 @@
     Extract Info
 {% endblock %}
 {% block main %}
+<form action="/extractsections" method="post">
+
+        <div>
+            {% for art in chosen_art %}
+            <ul>{{art}}</ul>
+            {% endfor %}
+        </div>
+
+        <button class="btn btn-primary" type="submit">Submit</button>
+
+        <!-- go to next page if this link is clicked -->
+
+
+    </form>
 
 {% endblock %}

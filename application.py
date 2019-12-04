@@ -84,7 +84,7 @@ def extractsections():
     if request.method == "POST":
         chosen_art = request.form.getlist("art title")
         print(chosen_art)
-        return render_template("extract.html")
+        return render_template("extract.html",chosen_art=chosen_art)
     else:
         return render_template("index.html",list_art=relev_art)
     return apology("end")
