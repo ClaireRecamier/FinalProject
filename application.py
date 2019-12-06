@@ -82,10 +82,18 @@ def index():
 @login_required
 def extractsections():
     if request.method == "POST":
+        #get list of checked titles from form
         chosen_art = request.form.getlist("art title")
-        print(chosen_art)
-        return render_template("extract.html",chosen_art=chosen_art)
+        #print(chosen_art)
+        for art in chosen_art:
+            #look up the article in the wikipedia object
+            page = wiki.page('art')
+            #extract the sections from each article. Getting the title of each article will b done in the jinja template w section.title
+            sections = page.sections
+        return render_template("extract.html",chosen_art=chosen_art,sections=sections)
     else:
+        #I don't think code actually ever gets here but in case it does, it hasn't obtained the chosen articles yet so display that again
+        #print("HEREEEEEE")
         return render_template("index.html",list_art=relev_art)
     return apology("end")
 

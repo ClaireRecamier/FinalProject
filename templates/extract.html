@@ -7,7 +7,14 @@
 
         <div>
             {% for art in chosen_art %}
-            <ul>{{art}}</ul>
+            <ul>{{art}}
+                <li>Summary</li>
+                {% for section in sections %}
+                    <li>
+                    {{section.title}}
+                    </li>
+                {% endfor %}
+            </ul>
             {% endfor %}
         </div>
 
