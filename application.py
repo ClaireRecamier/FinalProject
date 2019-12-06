@@ -52,6 +52,8 @@ if not os.environ.get("API_KEY"):
 relev_art = []
 #define chosen_art as the list of chosen articles from the checkbox form on index.html
 chosen_art = []
+#define chosen_sec as the list of chosen sections (format "Article:SectionTitle") from checkbox form on extract.html
+chosen_sec = []
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -83,6 +85,7 @@ def index():
 def extractsections():
     if request.method == "POST":
         #get list of checked titles from form
+        global chosen_art
         chosen_art = request.form.getlist("art title")
         #print(chosen_art)
         for art in chosen_art:
@@ -90,6 +93,7 @@ def extractsections():
             page = wiki.page('art')
             #extract the sections from each article. Getting the title of each article will b done in the jinja template w section.title
             sections = page.sections
+        print(chosen_art)
         return render_template("extract.html",chosen_art=chosen_art,sections=sections)
     else:
         #I don't think code actually ever gets here but in case it does, it hasn't obtained the chosen articles yet so display that again
@@ -98,10 +102,19 @@ def extractsections():
     return apology("end")
 
 
-@app.route("/history")
+@app.route("/extractmore", methods=["GET", "POST"])
 @login_required
-def history():
-    """Show history of transactions"""
+def extractmore():
+    if request.method == "POST":
+        # print("got here")-this printed so info is getting to post method for sure
+        #chosen_sec = request.form.getlist("sel_section")-successfully got the list of selected selections
+        for art in chosen_art:
+            page = wiki.page('art')
+            links = page.links
+            #return the list of titles (links.keys()), not the list of everything in each link
+        return render_template("extractmore.html",chosen_art=chosen_art,links=links.keys())
+    else:
+        return render_template("extract.html")
     return apology("TODO")
 
 

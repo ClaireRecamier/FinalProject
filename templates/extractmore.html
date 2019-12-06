@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block title %}
-    Extract Sections
+    Extract Subsections and Links
 {% endblock %}
 {% block main %}
 <div>
@@ -14,10 +14,9 @@
     <div>
         <form action="/extractmore" method="post">
                 <div class="form-group">
-                <li><input type = "checkbox" name = "sel_section" value = "{{art}}:summary">Summary</li>
-                {% for section in sections %}
+                {% for link in links %}
                     <li>
-                    <input type = "checkbox" name = "sel_section" value = "{{art}}:{{section.title}}"> {{section.title}}
+                    <input type = "checkbox" name = "sel_link" value = "{{art}}:{{link}}"> {{link}}
                     </li>
                 {% endfor %}
                 </div>
@@ -26,7 +25,7 @@
     </div>
 </div>
 
-        <button class="btn btn-primary" type="submit">Extract Subsections and Links</button>
+        <button class="btn btn-primary" type="submit">Double-check</button>
         </form>
 
 {% endblock %}
