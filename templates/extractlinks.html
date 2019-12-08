@@ -1,23 +1,21 @@
 {% extends "layout.html" %}
 {% block title %}
-    Extract Subsections and Links
+    Extract Links
 {% endblock %}
 {% block main %}
 <div>
     <div>
 
-            {% for art in chosen_art %}
-            <ul>{{art}}
+            {% for i in range(0,len) %}
+            <ul>{{chosen_art[i]}}
 
     </div>
 
     <div>
         <form action="/check" method="post">
                 <div class="form-group">
-                {% for link in links %}
-                    <li>
-                    <input type = "checkbox" name = "sel_link" value = "{{art}}:{{link}}"> {{link}}
-                    </li>
+                {% for item in links[i] %}
+                    <li><input type = "checkbox" name = "sel_link" value = "{{chosen_art[i]}}:{{item}}">{{item}}</li>
                 {% endfor %}
                 </div>
             </ul>

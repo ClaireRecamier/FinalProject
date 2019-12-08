@@ -18,6 +18,7 @@
                 {% for item in sections[i] %}
                     <li><input type = "checkbox" name = "sel_section" value = "{{chosen_art[i]}}:{{item}}">{{item}}</li>
                 {% endfor %}
+                 <li><input type = "checkbox" name = "{{chosen_art[i]}}:other_links" value = "yes">All links to other pages</li>
                 </div>
             </ul>
                 {% endfor %}

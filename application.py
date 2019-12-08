@@ -54,7 +54,7 @@ relev_art = []
 chosen_art = []
 #define chosen_sec as the list of chosen sections (format "Article:SectionTitle") from checkbox form on extract.html
 chosen_sec = []
-#define chosen_links as the list of chosen links from checkbox from on extractmore.html
+#define chosen_links as the list of chosen links from checkbox from on extractlinks.html
 chosen_links = []
 
 
@@ -95,15 +95,16 @@ def extractsections():
         sections = []
         for art in chosen_art:
             #print(art)
-            #look up the article in the wikipedia object
+            #look up the article in the wiki object
             page = wiki.page(art)
             #extract the sections from each article. will set sec equal to a list of sections w all info
             sec = page.sections
-            #define a list of titles of each section.
+            #define a list of titles of each section. initialize as empty
             titles = []
             for s in sec:
                 #append the title of each section to titles list.
                 titles.append(s.title)
+            #adds the list of section titles for that article as an object inside the list "sections"
             sections.append(titles)
         #print(sections)
         return render_template("extract.html",chosen_art=chosen_art,sections=sections,len=len(chosen_art))
@@ -116,17 +117,31 @@ def extractsections():
 
 @app.route("/extractlinks", methods=["GET", "POST"])
 @login_required
-def extractmore():
+def extractlinks():
     if request.method == "POST":
         # print("got here")-this printed so info is getting to post method for sure
-        #update global variable with list of selectected sections
+        #update global variable with list of selectected sections from html form from extract.html
         global chosen_sec
         chosen_sec = request.form.getlist("sel_section")
+        links = []
+        #list of articles for which user wants all links
+        art_link = []
+        #bool to determine which pathway to take
+        path = False
         for art in chosen_art:
-            page = wiki.page('art')
-            links = page.links
-        #return the list of titles (links.keys()), not the list of everything in each link
-        return render_template("extractlinks.html",chosen_art=chosen_art,links=links.keys())
+            #if the checkbox for all links to other pages for that article is clicked, then send to extractlinks.html
+            #print(request.form.get(art + ":other_links")) <- this printed yes
+            if request.form.get(art + ":other_links") == "yes":
+                path = True
+                art_link.append(art)
+                page = wiki.page(art)
+                lin = page.links
+                links.append(lin.keys())
+        if path == True:
+            return render_template("extractlinks.html",chosen_art=art_link,links=links,len=len(art_link))
+        #if the checkbox for all links to other pages is not clicked, send straight to double-check
+        else:
+            return render_template("check.html", chosen_art=chosen_art, chosen_sec=chosen_sec)
     else:
         return render_template("extract.html")
     return apology("TODO")
