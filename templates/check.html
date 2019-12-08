@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% block title %}
+    Double-Check
+{% endblock %}
+{% block main %}
+<div class="form-group">
+<form action="/create" method="post">
+    {% set counter = 0 %}
+    {% for art in chosen_art %}
+    <ul><input type = "checkbox" name = "articles" value = "{{art}}" checked> {{art}}
+    {% set l = lengths[counter] %}
+    <li>counter:{{counter}}</li>
+    <li>length of article title:{{l}}</li>
+
+
+            <div>
+                <div>
+                {% for sec in chosen_sec %}
+
+                    <li>{{sec|truncate(l, true)}}</li>
+                    {% set art = art + "..." %}
+                    <li>{{art}}</li>
+                    {% if art == sec|truncate(l) %}
+                    <li>
+                    <input type = "checkbox" name = "sections" value = "{{sec}}" checked> {{sec}}
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                </div>
+
+                <div>
+                {% for link in chosen_links %}
+                    <li>
+                    <input type = "checkbox" name = "links" value = "{{link}}" checked> {{link}}
+                    </li>
+                {% endfor %}
+                </div>
+            </div>
+
+
+    </ul>
+    {% set counter = counter + 1 %}
+    {% endfor %}
+
+
+
+    <button class="btn btn-primary" type="submit">Double-check</button>
+</form>
+</div
+
+{% endblock %}

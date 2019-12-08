@@ -6,19 +6,17 @@
 <div>
     <div>
 
-            {% for art in chosen_art %}
-            <ul>{{art}}
+            {% for i in range(0,len) %}
+            <ul>{{chosen_art[i]}}
 
     </div>
 
     <div>
-        <form action="/extractmore" method="post">
+        <form action="/extractlinks" method="post">
                 <div class="form-group">
-                <li><input type = "checkbox" name = "sel_section" value = "{{art}}:summary">Summary</li>
-                {% for section in sections %}
-                    <li>
-                    <input type = "checkbox" name = "sel_section" value = "{{art}}:{{section.title}}"> {{section.title}}
-                    </li>
+                <li><input type = "checkbox" name = "sel_section" value = "{{chosen_art[i]}}:summary">Summary</li>
+                {% for item in sections[i] %}
+                    <li><input type = "checkbox" name = "sel_section" value = "{{chosen_art[i]}}:{{item}}">{{item}}</li>
                 {% endfor %}
                 </div>
             </ul>

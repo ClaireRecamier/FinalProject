@@ -47,13 +47,15 @@ if not os.environ.get("API_KEY"):
     raise RuntimeError("API_KEY not set")
 
 
-#GLOBAL VARIABLES
+#GLOBAL VARIABLES (instead of using a database)
 #define relev_art as the list of relevant articles from the search(es)
 relev_art = []
-#define chosen_art as the list of chosen articles from the checkbox form on index.html
+#define chosen_art as the list of chosen articles from the checkbox form on index.html.
 chosen_art = []
 #define chosen_sec as the list of chosen sections (format "Article:SectionTitle") from checkbox form on extract.html
 chosen_sec = []
+#define chosen_links as the list of chosen links from checkbox from on extractmore.html
+chosen_links = []
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -86,15 +88,25 @@ def extractsections():
     if request.method == "POST":
         #get list of checked titles from form
         global chosen_art
+        chosen_art.clear()
         chosen_art = request.form.getlist("art title")
         #print(chosen_art)
+        #create list of sections
+        sections = []
         for art in chosen_art:
+            #print(art)
             #look up the article in the wikipedia object
-            page = wiki.page('art')
-            #extract the sections from each article. Getting the title of each article will b done in the jinja template w section.title
-            sections = page.sections
-        print(chosen_art)
-        return render_template("extract.html",chosen_art=chosen_art,sections=sections)
+            page = wiki.page(art)
+            #extract the sections from each article. will set sec equal to a list of sections w all info
+            sec = page.sections
+            #define a list of titles of each section.
+            titles = []
+            for s in sec:
+                #append the title of each section to titles list.
+                titles.append(s.title)
+            sections.append(titles)
+        #print(sections)
+        return render_template("extract.html",chosen_art=chosen_art,sections=sections,len=len(chosen_art))
     else:
         #I don't think code actually ever gets here but in case it does, it hasn't obtained the chosen articles yet so display that again
         #print("HEREEEEEE")
@@ -102,17 +114,19 @@ def extractsections():
     return apology("end")
 
 
-@app.route("/extractmore", methods=["GET", "POST"])
+@app.route("/extractlinks", methods=["GET", "POST"])
 @login_required
 def extractmore():
     if request.method == "POST":
         # print("got here")-this printed so info is getting to post method for sure
-        #chosen_sec = request.form.getlist("sel_section")-successfully got the list of selected selections
+        #update global variable with list of selectected sections
+        global chosen_sec
+        chosen_sec = request.form.getlist("sel_section")
         for art in chosen_art:
             page = wiki.page('art')
             links = page.links
-            #return the list of titles (links.keys()), not the list of everything in each link
-        return render_template("extractmore.html",chosen_art=chosen_art,links=links.keys())
+        #return the list of titles (links.keys()), not the list of everything in each link
+        return render_template("extractlinks.html",chosen_art=chosen_art,links=links.keys())
     else:
         return render_template("extract.html")
     return apology("TODO")
@@ -166,10 +180,21 @@ def logout():
     return redirect("/")
 
 
-@app.route("/quote", methods=["GET", "POST"])
+@app.route("/check", methods=["GET", "POST"])
 @login_required
-def quote():
-    """Get stock quote."""
+def check():
+    if request.method == "POST":
+        global chosen_links
+        chosen_links = request.form.getlist("sel_link")
+        #print(chosen_art)
+        #print(chosen_sec)
+        #print(chosen_links)
+        lengths = []
+        for art in chosen_art:
+            lengths.append(len(art))
+        return render_template("check.html", chosen_art=chosen_art, chosen_sec=chosen_sec, chosen_links=chosen_links, lengths=lengths)
+    else:
+        return render_template("extractlinks.html")
     return apology("TODO")
 
 
@@ -205,10 +230,21 @@ def register():
     return apology("TODO")
 
 
-@app.route("/sell", methods=["GET", "POST"])
+@app.route("/create", methods=["GET", "POST"])
 @login_required
-def sell():
-    """Sell shares of stock"""
+def create():
+    f= open("WikiBook.txt","w+")
+    articles = request.form.getlist("articles")
+    sections = request.form.getlist("sections")
+    links = request.form.getlist("links")
+    #print(sections)
+    for art in articles:
+        f.write(art + "\n")
+        for sec in sections:
+            sec = sec.split(":")
+            if sec[0] == art:
+                f.write(sec[1] + "\n")
+
     return apology("TODO")
 
 
