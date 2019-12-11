@@ -4,7 +4,7 @@ import wikipediaapi
 
 
 from cs50 import SQL
-from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
+from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for, send_file
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
@@ -166,7 +166,7 @@ def check():
 
 @app.route("/create", methods=["GET", "POST"])
 def create():
-    print(chosen_art)
+    #print(chosen_art)
     if request.method == "POST":
         f = open("WikiBook.txt","w+")
         articles = request.form.getlist("articles")
@@ -192,7 +192,11 @@ def create():
                             f.write(sect.text + "\n")
             #write a newline in between articles
             f.write("\n")
-    return apology("TODO")
+    return render_template("created.html")
+
+@app.route("/download")
+def downloadFile ():
+    return send_file("WikiBook.txt", attachment_filename="WikiBook.txt")
 
 
 def errorhandler(e):
