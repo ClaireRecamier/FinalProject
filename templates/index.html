@@ -3,6 +3,7 @@
     Wikipedia Search
 {% endblock %}
 {% block main %}
+<h2> Complete all your Wikipedia Searches before selecting which articles you would like to extract info from!</h2>
     <form action="/" method="post">
         <div class="form-group">
             <input autocomplete="off" autofocus class="form-control" name="Wikipedia Search" placeholder="Wikipedia Search" type="text">
@@ -17,7 +18,7 @@
             <li><input type = "checkbox" name = "art title" value = "{{art}}"> {{art}}</li>
             {% endfor %}
         </div>
-        <!-- go to next page if this link is clicked -->
+
         <button class="btn btn-primary" type="submit">Extract Sections From Articles</button>
 
 

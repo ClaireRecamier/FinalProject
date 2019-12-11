@@ -53,22 +53,27 @@ chosen_links = []
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-
+    global chosen_art
+    global chosen_sec
+    global chosen_links
+    global relev_art
     if request.method == "POST":
         #define a variable called search that is the input of the search form
         search = request.form.get("Wikipedia Search")
         #goal is not to have repeated articles in main list, even if the page is reloaded and the same form is resubmitted
         #define a temporary list of relevant articles returned from the search
-        temp_relev_art = wikipedia.search(search)
+        temprelev_art = wikipedia.search(search)
         #pare down temporary list to relevant articles not already in main list
-        temp_relev_art = list(set(temp_relev_art).difference(relev_art))
+        temprelev_art = list(set(temprelev_art).difference(relev_art))
         #add the items in temporary list to main list
-        relev_art.extend(temp_relev_art)
+        relev_art.extend(temprelev_art)
         #send main updated list to html file to be posted
         return render_template("index.html",list_art=relev_art)
-
     else:
-        #if homepage button is pressed or user exits and logs in again, clear the main list.
+        #if homepage button is pressed or user exits, clear the main list.
+        chosen_art.clear()
+        chosen_sec.clear()
+        chosen_links.clear()
         relev_art.clear()
         return render_template("index.html")
 #    return apology("Failed Search")
@@ -76,14 +81,13 @@ def index():
 
 @app.route("/extractsections", methods=["GET", "POST"])
 def extractsections():
+    global chosen_art
+    #create list of sections
+    sections = []
+    #case where extracting sections for the first time, not extracting sections from links
     if request.method == "POST":
         #get list of checked titles from form
-        global chosen_art
-        chosen_art.clear()
-        chosen_art = request.form.getlist("art title")
-        #print(chosen_art)
-        #create list of sections
-        sections = []
+        chosen_art.extend(request.form.getlist("art title"))
         for art in chosen_art:
             #print(art)
             #look up the article in the wiki object
@@ -101,7 +105,7 @@ def extractsections():
         return render_template("extract.html",chosen_art=chosen_art,sections=sections,len=len(chosen_art))
     else:
         #I don't think code actually ever gets here but in case it does, it hasn't obtained the chosen articles yet so display that again
-        #print("HEREEEEEE")
+        print("HEREEEEEE")
         return render_template("index.html",list_art=relev_art)
     return apology("end")
 
@@ -151,6 +155,7 @@ def check():
     for art in chosen_art:
         lengths.append(len(art))
     if request.method == "POST":
+        #i dont think this ever gets called
         global chosen_links
         chosen_links = request.form.getlist("sel_link")
         #print(chosen_art)
@@ -180,6 +185,7 @@ def create():
             page = wiki.page(art)
             #lookup that page's sections
             compsec = page.sections
+            complink = page.links
             #iterate thru the retrieved list of sections from form
             for sec in sections:
                 #if the current article matches the article of this section
@@ -190,12 +196,27 @@ def create():
                         if sect.title in sec:
                             f.write(sect.title + "\n")
                             f.write(sect.text + "\n")
+            for link in links:
+                #if the current article matches the article of this section
+                if art in link:
+                    #iterate thru list of sections for current article
+                    for lin in complink:
+                        #if the title of the section matches the retreived section, write it to file
+                        if lin.key() in sec:
+                            f.write(lin.key() + "\n")
+                            f.write(sect.text + "\n")
             #write a newline in between articles
             f.write("\n")
     return render_template("created.html")
 
 @app.route("/download")
 def downloadFile ():
+    global chosen_art
+    global chosen_sec
+    global chosen_links
+    chosen_art.clear()
+    chosen_sec.clear()
+    chosen_links.clear()
     return send_file("WikiBook.txt", attachment_filename="WikiBook.txt")
 
 

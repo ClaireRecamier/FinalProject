@@ -12,10 +12,10 @@
     </div>
 
     <div>
-        <form action="/check" method="post">
+        <form action="/extractsections" method="post">
                 <div class="form-group">
                 {% for item in links[i] %}
-                    <li><input type = "checkbox" name = "sel_link" value = "{{chosen_art[i]}}:{{item}}">{{item}}</li>
+                    <li><input type = "checkbox" name = "art title" value = "{{item}}">{{item}}</li>
                 {% endfor %}
                 </div>
             </ul>
@@ -23,7 +23,7 @@
     </div>
 </div>
 
-        <button class="btn btn-primary" type="submit">Double-check</button>
+        <button class="btn btn-primary" type="submit">Extract Sections From Links</button>
         </form>
 
 {% endblock %}
