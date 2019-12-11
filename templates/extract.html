@@ -14,7 +14,6 @@
     <div>
         <form action="/extractlinks" method="post">
                 <div class="form-group">
-                <li><input type = "checkbox" name = "sel_section" value = "{{chosen_art[i]}}:summary">Summary</li>
                 {% for item in sections[i] %}
                     <li><input type = "checkbox" name = "sel_section" value = "{{chosen_art[i]}}:{{item}}">{{item}}</li>
                 {% endfor %}
