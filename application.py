@@ -4,7 +4,7 @@ import wikipediaapi
 
 
 from cs50 import SQL
-from flask import Flask, flash, jsonify, redirect, render_template, request, session
+from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
@@ -122,29 +122,37 @@ def extractlinks():
         # print("got here")-this printed so info is getting to post method for sure
         #update global variable with list of selectected sections from html form from extract.html
         global chosen_sec
+        #update the global variable chosen_sec with the list of selected selections
         chosen_sec = request.form.getlist("sel_section")
         links = []
         #list of articles for which user wants all links
         art_link = []
-        #bool to determine which pathway to take
+        #bool to determine which pathway to take. if false, will go to "else" statement and send straight to double-check.
         path = False
         for art in chosen_art:
-            #if the checkbox for all links to other pages for that article is clicked, then send to extractlinks.html
+            #if the checkbox for "all links to other pages" for that article is clicked, then send to extractlinks.html
             #print(request.form.get(art + ":other_links")) <- this printed yes
             if request.form.get(art + ":other_links") == "yes":
+                #change path to extractlinks.html if the user asks for all links to other pages to be displayed.
                 path = True
+                #add the article title to the list of articles for which user wants all links
                 art_link.append(art)
+                #get all info for that page
                 page = wiki.page(art)
+                #get all links for that page
                 lin = page.links
+                #append to links list an item which is the a list of all the titles of links in that article
                 links.append(lin.keys())
         if path == True:
             return render_template("extractlinks.html",chosen_art=art_link,links=links,len=len(art_link))
         #if the checkbox for all links to other pages is not clicked, send straight to double-check
         else:
-            return render_template("check.html", chosen_art=chosen_art, chosen_sec=chosen_sec)
+            #print("got here") <- this printed so it does get here
+            #return render_template("check.html", chosen_art=chosen_art, chosen_sec=chosen_sec)
+            return redirect(url_for('check'))
     else:
         return render_template("extract.html")
-    return apology("TODO")
+    return apology("even worse")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -198,19 +206,20 @@ def logout():
 @app.route("/check", methods=["GET", "POST"])
 @login_required
 def check():
+    lengths = []
+    for art in chosen_art:
+        lengths.append(len(art))
     if request.method == "POST":
         global chosen_links
         chosen_links = request.form.getlist("sel_link")
         #print(chosen_art)
         #print(chosen_sec)
         #print(chosen_links)
-        lengths = []
-        for art in chosen_art:
-            lengths.append(len(art))
-        return render_template("check.html", chosen_art=chosen_art, chosen_sec=chosen_sec, chosen_links=chosen_links, lengths=lengths)
+        return render_template("check.html", chosen_art=chosen_art, chosen_sec=chosen_sec, chosen_links=chosen_links, lengths=lengths, len=len(lengths))
     else:
-        return render_template("extractlinks.html")
-    return apology("TODO")
+        #print("got here") <- if path variable in /extractlinks was set to false, redirects here.
+        return render_template("check.html", chosen_art=chosen_art, chosen_sec=chosen_sec, chosen_links=chosen_links, lengths=lengths, len=len(lengths))
+    return apology("annoyed")
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -248,18 +257,30 @@ def register():
 @app.route("/create", methods=["GET", "POST"])
 @login_required
 def create():
-    f= open("WikiBook.txt","w+")
-    articles = request.form.getlist("articles")
-    sections = request.form.getlist("sections")
-    links = request.form.getlist("links")
-    #print(sections)
-    for art in articles:
-        f.write(art + "\n")
-        for sec in sections:
-            sec = sec.split(":")
-            if sec[0] == art:
-                f.write(sec[1] + "\n")
-
+    print(chosen_art)
+    if request.method == "POST":
+        f = open("WikiBook.txt","w+")
+        articles = request.form.getlist("articles")
+        sections = request.form.getlist("sections")
+        links = request.form.getlist("links")
+        #iterate through list of articles retrieved from form
+        for art in articles:
+            #write article title and newline
+            f.write(art + "\n")
+            #lookup that page
+            page = wiki.page(art)
+            #lookup that page's sections
+            compsec = page.sections
+            #iterate thru the retrieved list of sections from form
+            for sec in sections:
+                #if the current article matches the article of this section
+                if art in sec:
+                    #iterate thru list of sections for current article
+                    for sect in compsec:
+                        #if the title of the section matches the retreived section, write it to file
+                        if sect.title in sec:
+                            f.write(sect.title + "\n")
+                            f.write(sect.text + "\n")
     return apology("TODO")
 
 

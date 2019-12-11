@@ -3,49 +3,35 @@
     Double-Check
 {% endblock %}
 {% block main %}
+
+
 <div class="form-group">
 <form action="/create" method="post">
-    {% set counter = 0 %}
-    {% for art in chosen_art %}
-    <ul><input type = "checkbox" name = "articles" value = "{{art}}" checked> {{art}}
-    {% set l = lengths[counter] %}
-    <li>counter:{{counter}}</li>
-    <li>length of article title:{{l}}</li>
+{% for i in range (0,len) %}
+    <ul><input type = "checkbox" name = "articles" value = "{{chosen_art[i]}}" checked> {{chosen_art[i]}}
+    {% for sec in chosen_sec %}
+        {% if chosen_art[i] in sec %}
 
+            <li><input type = "checkbox" name = "sections" value = "{{sec}}" checked>{{sec}}</li>
 
-            <div>
-                <div>
-                {% for sec in chosen_sec %}
+        {% endif %}
+    {% endfor %}
+    {% for link in chosen_links %}
+        {% if chosen_art[i] in link %}
 
-                    <li>{{sec|truncate(l, true)}}</li>
-                    {% set art = art + "..." %}
-                    <li>{{art}}</li>
-                    {% if art == sec|truncate(l) %}
-                    <li>
-                    <input type = "checkbox" name = "sections" value = "{{sec}}" checked> {{sec}}
-                    </li>
-                    {% endif %}
-                {% endfor %}
-                </div>
+            <li><input type = "checkbox" name = "links" value = "{{link}}" checked>{{link}}</li>
 
-                <div>
-                {% for link in chosen_links %}
-                    <li>
-                    <input type = "checkbox" name = "links" value = "{{link}}" checked> {{link}}
-                    </li>
-                {% endfor %}
-                </div>
-            </div>
-
-
-    </ul>
-    {% set counter = counter + 1 %}
+        {% endif %}
     {% endfor %}
 
 
-
-    <button class="btn btn-primary" type="submit">Double-check</button>
+    </ul>
+{% endfor %}
+</div>
+        <button class="btn btn-primary" type="submit">Create Ebook!</button>
 </form>
-</div
+
+
+
 
 {% endblock %}
